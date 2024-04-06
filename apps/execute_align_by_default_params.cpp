@@ -85,7 +85,7 @@ int main(int argc, char** argv) {
   ndt_omp->setInputTarget(target_cloud);
   ndt_omp->createVoxelKdtree();
 
-  fast_gicp::FastGICP<pcl::PointXYZ, pcl::PointXYZ>::Ptr fast_gicp(new fast_gicp::FastGICP<pcl::PointXYZ, pcl::PointXYZ>());
+  fast_gicp::FastVGICP<pcl::PointXYZ, pcl::PointXYZ>::Ptr fast_gicp(new fast_gicp::FastVGICP<pcl::PointXYZ, pcl::PointXYZ>());
   fast_gicp->setNumThreads(4);
   fast_gicp->setMaximumIterations(30);
   fast_gicp->setTransformationEpsilon(0.01);

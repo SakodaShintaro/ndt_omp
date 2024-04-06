@@ -64,8 +64,6 @@ void FastVGICP<PointSource, PointTarget>::setInputTarget(const PointCloudTargetC
 
 template<typename PointSource, typename PointTarget>
 void FastVGICP<PointSource, PointTarget>::computeTransformation(PointCloudSource& output, const Matrix4& guess) {
-  voxelmap_.reset();
-
   FastGICP<PointSource, PointTarget>::computeTransformation(output, guess);
 }
 
