@@ -86,6 +86,7 @@ int main(int argc, char** argv) {
   ndt_omp->createVoxelKdtree();
 
   fast_gicp::FastVGICP<pcl::PointXYZ, pcl::PointXYZ>::Ptr fast_gicp(new fast_gicp::FastVGICP<pcl::PointXYZ, pcl::PointXYZ>());
+  fast_gicp->setResolution(2.0);
   fast_gicp->setNumThreads(4);
   fast_gicp->setMaximumIterations(30);
   fast_gicp->setTransformationEpsilon(0.01);
@@ -93,10 +94,8 @@ int main(int argc, char** argv) {
 
   using namespace small_gicp;
   RegistrationPCL<pcl::PointXYZ, pcl::PointXYZ>::Ptr small_gicp(new RegistrationPCL<pcl::PointXYZ, pcl::PointXYZ>());
+  small_gicp->setVoxelResolution(2.0);
   small_gicp->setNumThreads(4);
-  small_gicp->setCorrespondenceRandomness(20);
-  small_gicp->setMaxCorrespondenceDistance(1.0);
-  small_gicp->setVoxelResolution(1.0);
   small_gicp->setMaximumIterations(30);
   small_gicp->setTransformationEpsilon(0.01);
   small_gicp->setRegistrationType("VGICP");
