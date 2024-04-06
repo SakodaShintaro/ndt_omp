@@ -63,7 +63,7 @@ if __name__ == "__main__":
     gt_x = df_gt["pose_x"]
     gt_y = df_gt["pose_y"]
     gt_z = df_gt["pose_z"]
-    fig, axs = plt.subplots(2, 2)
+    fig, axs = plt.subplots(2, 2, figsize=(6.4 * 1.5, 4.8 * 1.5))
     for method in methods:
         pred_x = df_result[f"{method}_pose03"]
         pred_y = df_result[f"{method}_pose13"]
@@ -102,7 +102,7 @@ if __name__ == "__main__":
     gt_quat_y = df_gt["quat_y"]
     gt_quat_z = df_gt["quat_z"]
     gt_r = Rotation.from_quat(np.vstack([gt_quat_x, gt_quat_y, gt_quat_z, gt_quat_w]).T)
-    fig, axs = plt.subplots(2, 2)
+    fig, axs = plt.subplots(2, 2, figsize=(6.4 * 1.5, 4.8 * 1.5))
     for method in methods:
         rotate_matrix = np.zeros((len(df_result), 3, 3))
         rotate_matrix[:, 0, 0] = df_result[f"{method}_pose00"]
