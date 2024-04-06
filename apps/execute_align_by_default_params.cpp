@@ -34,6 +34,8 @@
 #include "pcd_map_grid_manager.hpp"
 #include "timer.hpp"
 
+#include "small_gicp/pcl/pcl_registration.hpp"
+
 std::ostream& operator<<(std::ostream& ost, const Eigen::Matrix4f& pose) {
   for(int i = 0; i < 4; i++) {
     for(int j = 0; j < 4; j++) {
@@ -88,13 +90,24 @@ int main(int argc, char** argv) {
   fast_gicp->setTransformationEpsilon(0.01);
   fast_gicp->setInputTarget(target_cloud);
 
+  using namespace small_gicp;
+  RegistrationPCL<pcl::PointXYZ, pcl::PointXYZ>::Ptr small_gicp(new RegistrationPCL<pcl::PointXYZ, pcl::PointXYZ>());
+  small_gicp->setNumThreads(4);
+  small_gicp->setCorrespondenceRandomness(20);
+  small_gicp->setMaxCorrespondenceDistance(1.0);
+  small_gicp->setVoxelResolution(1.0);
+  small_gicp->setMaximumIterations(30);
+  small_gicp->setTransformationEpsilon(0.01);
+  small_gicp->setRegistrationType("VGICP");
+  small_gicp->setInputTarget(target_cloud);
+
   Timer timer;
 
   mkdir(output_dir.c_str(), 0777);
   std::ofstream ofs(output_dir + "/result.csv");
   ofs << std::fixed;
 
-  const std::vector<std::string> methods = {"ndt_omp", "fast_gicp"};
+  const std::vector<std::string> methods = {"ndt_omp", "fast_gicp", "small_gicp"};
   for(const std::string& method : methods) {
     ofs << method << "_elapsed_msec,";
     for(int i = 0; i < 4; i++) {
@@ -120,6 +133,7 @@ int main(int argc, char** argv) {
     const pcl::PointCloud<pcl::PointXYZ>::Ptr source_cloud = load_pcd(source_pcd);
     ndt_omp->setInputSource(source_cloud);
     fast_gicp->setInputSource(source_cloud);
+    small_gicp->setInputSource(source_cloud);
 
     // align
     pcl::PointCloud<pcl::PointXYZ>::Ptr aligned(new pcl::PointCloud<pcl::PointXYZ>());
@@ -137,7 +151,14 @@ int main(int argc, char** argv) {
     fast_gicp->align(*aligned, initial_pose);
     const double elapsed_fast_gicp = timer.elapsed_milliseconds();
     const Eigen::Matrix4f result_fast_gicp = fast_gicp->getFinalTransformation();
-    ofs << elapsed_fast_gicp << "," << result_fast_gicp;
+    ofs << elapsed_fast_gicp << "," << result_fast_gicp << ",";
+
+    // small_gicp
+    timer.start();
+    small_gicp->align(*aligned, initial_pose);
+    const double elapsed_small_gicp = timer.elapsed_milliseconds();
+    const Eigen::Matrix4f result_small_gicp = small_gicp->getFinalTransformation();
+    ofs << elapsed_small_gicp << "," << result_small_gicp;
 
     ofs << std::endl;
 

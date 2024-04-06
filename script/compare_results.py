@@ -41,12 +41,13 @@ if __name__ == "__main__":
     [5 rows x 34 columns]
     """
 
-    methods = ["ndt_omp", "fast_gicp"]
+    methods = ["ndt_omp", "fast_gicp", "small_gicp"]
 
     # plot elapsed_msec
     for method in methods:
         plt.plot(df_result[f"{method}_elapsed_msec"][1:], label=method)
 
+    plt.ylim(bottom=0)
     plt.legend()
     plt.grid()
     plt.xlabel("frame number")

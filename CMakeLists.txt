@@ -35,6 +35,10 @@ message(STATUS "PCL_DEFINITIONS:" ${PCL_DEFINITIONS})
 
 find_package(OpenMP)
 
+include_directories(
+  ./small_gicp/include
+)
+
 ###########
 ## Build ##
 ###########
