@@ -14,6 +14,7 @@
 
 #include <iostream>
 #include <chrono>
+#include <random>
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
@@ -126,9 +127,14 @@ int main(int argc, char** argv) {
   }
 
   // execute align
+  std::uniform_real_distribution<float> dist(0.0, 3.0);
+  std::mt19937_64 engine(std::random_device{}());
   for(int64_t i = 0; i < n_data; i++) {
     // get input
-    const Eigen::Matrix4f initial_pose = initial_pose_list[i];
+    Eigen::Matrix4f initial_pose = initial_pose_list[i];
+    initial_pose(0, 3) += dist(engine);
+    initial_pose(1, 3) += dist(engine);
+
     const std::string& source_pcd = source_pcd_list[i];
     const pcl::PointCloud<pcl::PointXYZ>::Ptr source_cloud = load_pcd(source_pcd);
     ndt_omp->setInputSource(source_cloud);

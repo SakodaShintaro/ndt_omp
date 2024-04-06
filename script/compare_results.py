@@ -46,6 +46,7 @@ if __name__ == "__main__":
     # plot elapsed_msec
     for method in methods:
         plt.plot(df_result[f"{method}_elapsed_msec"][1:], label=method)
+        print(f"{method} : {df_result[f'{method}_elapsed_msec'].mean():.2f} [msec]")
 
     plt.ylim(bottom=0)
     plt.legend()
@@ -86,6 +87,7 @@ if __name__ == "__main__":
         axs[1, 1].plot(diff)
         axs[1, 1].set_ylabel("norm[m]")
         axs[1, 1].grid(True)
+        print(f"{method} : {np.mean(diff):.2f} [m]")
 
     fig.tight_layout()
     fig.legend(loc="lower left", bbox_to_anchor=(0.4, 1.0))
@@ -132,6 +134,8 @@ if __name__ == "__main__":
         axs[1, 1].plot(diff_r_norm)
         axs[1, 1].set_ylabel("norm[deg]")
         axs[1, 1].grid(True)
+
+        print(f"{method} : {np.mean(diff_r_norm):.2f} [deg]")
 
     fig.tight_layout()
     fig.legend(loc="lower left", bbox_to_anchor=(0.4, 1.0))
