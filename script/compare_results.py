@@ -46,7 +46,7 @@ if __name__ == "__main__":
     # plot elapsed_msec
     for method in methods:
         plt.plot(df_result[f"{method}_elapsed_msec"][1:], label=method)
-        print(f"{method} : {df_result[f'{method}_elapsed_msec'].mean():.2f} [msec]")
+        print(f"{method} : {df_result[f'{method}_elapsed_msec'][1:].mean():.2f} [msec]")
 
     plt.ylim(bottom=0)
     plt.legend()
