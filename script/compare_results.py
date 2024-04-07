@@ -59,18 +59,25 @@ if __name__ == "__main__":
     print(f"Saved to {save_path}")
     plt.close()
 
+    # get GT data
+    gt_xyz = df_gt[["pose_x", "pose_y", "pose_z"]].values
+    gt_quat_w = df_gt["quat_w"]
+    gt_quat_x = df_gt["quat_x"]
+    gt_quat_y = df_gt["quat_y"]
+    gt_quat_z = df_gt["quat_z"]
+    gt_r = Rotation.from_quat(np.vstack([gt_quat_x, gt_quat_y, gt_quat_z, gt_quat_w]).T)
+
     # plot diff xyz
-    gt_x = df_gt["pose_x"]
-    gt_y = df_gt["pose_y"]
-    gt_z = df_gt["pose_z"]
     fig, axs = plt.subplots(2, 2, figsize=(6.4 * 1.5, 4.8 * 1.5))
     for method in methods:
-        pred_x = df_result[f"{method}_pose03"]
-        pred_y = df_result[f"{method}_pose13"]
-        pred_z = df_result[f"{method}_pose23"]
-        diff_x = pred_x - gt_x
-        diff_y = pred_y - gt_y
-        diff_z = pred_z - gt_z
+        pred_xyz = df_result[
+            [f"{method}_pose03", f"{method}_pose13", f"{method}_pose23"]
+        ].values
+        diff_xyz = pred_xyz - gt_xyz
+        diff_xyz_base_link = np.einsum("ijk,ik->ij", gt_r.inv().as_matrix(), diff_xyz)
+        diff_x = diff_xyz_base_link[:, 0]
+        diff_y = diff_xyz_base_link[:, 1]
+        diff_z = diff_xyz_base_link[:, 2]
         diff = np.sqrt(diff_x**2 + diff_y**2 + diff_z**2)
         axs[0, 0].plot(diff_x, label=method)
         axs[0, 0].set_ylabel("x[m]")
@@ -97,11 +104,6 @@ if __name__ == "__main__":
     plt.close()
 
     # plot roll, pitch, yaw
-    gt_quat_w = df_gt["quat_w"]
-    gt_quat_x = df_gt["quat_x"]
-    gt_quat_y = df_gt["quat_y"]
-    gt_quat_z = df_gt["quat_z"]
-    gt_r = Rotation.from_quat(np.vstack([gt_quat_x, gt_quat_y, gt_quat_z, gt_quat_w]).T)
     fig, axs = plt.subplots(2, 2, figsize=(6.4 * 1.5, 4.8 * 1.5))
     for method in methods:
         rotate_matrix = np.zeros((len(df_result), 3, 3))
