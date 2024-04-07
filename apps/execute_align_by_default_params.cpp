@@ -126,7 +126,7 @@ int main(int argc, char** argv) {
   }
 
   // execute align
-  std::uniform_real_distribution<float> dist(0.0, 3.0);
+  std::uniform_real_distribution<float> dist(-3.0, 3.0);
   std::mt19937_64 engine(std::random_device{}());
   for(int64_t i = 0; i < n_data; i++) {
     // get input
