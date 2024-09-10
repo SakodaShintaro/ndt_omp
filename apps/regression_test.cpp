@@ -70,7 +70,7 @@ int main(int argc, char ** argv)
   mg_ndt_omp->setResolution(2.0);
   mg_ndt_omp->setNumThreads(4);
   mg_ndt_omp->setMaximumIterations(30);
-  mg_ndt_omp->setTransformationEpsilon(0.0);
+  mg_ndt_omp->setTransformationEpsilon(0.01);
   mg_ndt_omp->createVoxelKdtree();
 
   // prepare map grid manager
@@ -80,6 +80,7 @@ int main(int argc, char ** argv)
   std::vector<double> elapsed_milliseconds;
   std::vector<double> nvtl_scores;
   std::vector<double> tp_scores;
+  std::vector<int> iteration_nums;
 
   std::cout << std::fixed;
 
@@ -123,9 +124,11 @@ int main(int argc, char ** argv)
     // output result
     const double tp = ndt_result.transform_probability;
     const double nvtl = ndt_result.nearest_voxel_transformation_likelihood;
+    const int iteration_num = ndt_result.iteration_num;
     elapsed_milliseconds.push_back(elapsed);
     nvtl_scores.push_back(nvtl);
     tp_scores.push_back(tp);
+    iteration_nums.push_back(iteration_num);
     if (i % update_interval == 0) {
       std::cout << "source_cloud->size()=" << std::setw(4) << source_cloud->size()
                 << ", time=" << elapsed << " [msec], nvtl=" << nvtl << ", tp = " << tp
@@ -136,9 +139,10 @@ int main(int argc, char ** argv)
   // output result
   mkdir(output_dir.c_str(), 0777);
   std::ofstream ofs(output_dir + "/result.csv");
-  ofs << "elapsed_milliseconds,nvtl_score,tp_score" << std::endl;
+  ofs << "elapsed_milliseconds,nvtl_score,tp_score,iteration_num" << std::endl;
   ofs << std::fixed;
   for (size_t i = 0; i < elapsed_milliseconds.size(); i++) {
-    ofs << elapsed_milliseconds[i] << "," << nvtl_scores[i] << "," << tp_scores[i] << std::endl;
+    ofs << elapsed_milliseconds[i] << "," << nvtl_scores[i] << "," << tp_scores[i] << ","
+        << iteration_nums[i] << std::endl;
   }
 }
